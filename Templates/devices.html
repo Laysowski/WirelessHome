@@ -1,0 +1,10 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+    <h1>Devices</h1>
+    <ul class="list-group">
+        {% for device in devices %}
+        <li class="list-group-item"><a href="device/{{device.id}}">{{device.title}}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock %}

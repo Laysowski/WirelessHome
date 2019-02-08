@@ -1,0 +1,32 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+    <h1>Dashboard <small>Welcome {{session.username}}</small></h1>
+    <a class="btn btn-success" href="/add_device">Add Device</a>
+    <hr>
+    <table class="table table-striped">
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Date</th>
+            <th></th>
+            <th></th>
+        </tr>
+        {% for device in devices %}
+            <tr>
+                <td>{{device.id}}</td>
+                <td>{{device.title}}</td>
+                <td>{{device.author}}</td>
+                <td>{{device.create_date}}</td>
+                <td><a href="edit_device/{{device.id}}}" class="btn btn-default pull-right">Edit</a> </td>
+                <td>
+                    <form action="{{url_for('delete_device',id=device.id)}}" method="POST">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <input type="submit" value="Delete" class="btn btn-danger">
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
