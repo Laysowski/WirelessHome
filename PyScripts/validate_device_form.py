@@ -2,7 +2,8 @@ import os
 import socket
 # Check the IP Address
 def Check_IP(ip):
-
+    pattern = '192.168.0.'
+    if ip.find()
     return False
 
 
