@@ -3,7 +3,7 @@ from flask_mysqldb import MySQL
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
 from functools import wraps
-
+import PyScripts.validate_device_form as fctns
 app = Flask(__name__)
 
 # Config MySQL
@@ -31,7 +31,6 @@ def about():
 def configuration():
     # create cursor
     cur = mysql.connection.cursor()
-
     # get devices
     result = cur.execute("SELECT * FROM devices")
 
@@ -187,20 +186,22 @@ def add_device():
     if request.method == 'POST' and form.validate():
         title = form.title.data
         body = form.body.data
+        if (fctns.validateIP(title)):
+            # create cursor
+            cur = mysql.connection.cursor()
 
-        # create cursor
-        cur = mysql.connection.cursor()
+            # execute
+            cur.execute("INSERT INTO devices(title, body, author) VALUES(%s, %s, %s)", (title, body, session['username']))
 
-        # execute
-        cur.execute("INSERT INTO devices(title, body, author) VALUES(%s, %s, %s)", (title, body, session['username']))
+            # commit to DB
+            mysql.connection.commit()
 
-        # commit to DB
-        mysql.connection.commit()
+            # close connection
+            cur.close()
 
-        # close connection
-        cur.close()
-
-        flash('Device created', 'success')
+            flash('Device created', 'success')
+        else:
+            flash('Wrong IP Address!', 'danger')
         redirect(url_for('dashboard'))
 
     return render_template('add_device.html', form=form)
