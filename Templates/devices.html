@@ -4,7 +4,11 @@
     <h1>Devices</h1>
     <ul class="list-group">
         {% for device in devices %}
-        <li class="list-group-item"><a href="device/{{device.id}}">{{device.name}}</a></li>
+        <li class="list-group-item"><a href="device/{{device.id}}">
+            {{device.name}}</a>
+            <a href="/turnOFF"><button class="btn btn-danger float-right">OFF</button></a>
+            <a href="/turnON"><button class="btn btn-success float-right">ON</button></a>
+        </li>
         {% endfor %}
     </ul>
 {% endblock %}

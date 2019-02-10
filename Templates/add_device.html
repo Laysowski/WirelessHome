@@ -13,6 +13,9 @@
         <div class="form-group">
             {{ render_field(form.ip_address, class_="form-control") }}
         </div>
+        <div class="form-group">
+            {{ render_field(form.mqtt_topic, class_="form-control") }}
+        </div>
         <p><input class="btn btn-primary" type="submit" value="Submit"></p>
     </form>
 {% endblock %}

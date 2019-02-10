@@ -4,6 +4,7 @@ from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
 from functools import wraps
 import PyScripts.validate_device_form as fctns
+import PyScripts.mqtt as mqt_funs
 app = Flask(__name__)
 
 # Config MySQL
@@ -45,7 +46,7 @@ def configuration():
     cur.close()
 
 
-@app.route('/devices/<string:id>/')
+@app.route('/device/<string:id>/')
 def device(id):
     # create cursor
     cur = mysql.connection.cursor()
@@ -54,6 +55,7 @@ def device(id):
     result = cur.execute("SELECT * FROM devices WHERE id = %s", [id])
 
     device = cur.fetchone()  # catch in dictionary form
+    cur.close()
     return render_template('device.html', device=device)
 
 
@@ -177,6 +179,7 @@ class DeviceForm(Form):
     name = StringField('Name', [validators.Length(min=1, max=200)])
     device_type = StringField('Device type [relay/other]', [validators.Length(min=1, max=200)])
     ip_address = StringField('IP Address', [validators.Length(min=1, max=200)])
+    mqtt_topic = StringField('MQTT Topic', [validators.Length(min=1, max=200)])
     # body = TextAreaField('Body', [validators.Length(min=30)])
 
 
@@ -189,12 +192,13 @@ def add_device():
         name = form.name.data
         device_type = form.device_type.data
         ip_address = form.ip_address.data
+        mqtt_topic = form.mqtt_topic.data
         if (fctns.validateIP(ip_address)):
             # create cursor
             cur = mysql.connection.cursor()
 
             # execute
-            cur.execute("INSERT INTO devices(name, device_type, ip_address) VALUES(%s, %s, %s)", (name, device_type, ip_address))
+            cur.execute("INSERT INTO devices(name, device_type, ip_address, mqtt_topic) VALUES(%s, %s, %s, %s)", (name, device_type, ip_address, mqtt_topic))
 
             # commit to DB
             mysql.connection.commit()
@@ -218,7 +222,7 @@ def edit_device(id):
     cur = mysql.connection.cursor()
 
     # Get device by id
-    result = cur.execute("SELECT * FROM device WHERE id = %s", [id])
+    result = cur.execute("SELECT * FROM devices WHERE id = %s", [id])
 
     device = cur.fetchone()
 
@@ -229,25 +233,29 @@ def edit_device(id):
     form.name.data = device['name']
     form.device_type.data = device['device_type']
     form.ip_address.data = device['ip_address']
+    form.mqtt_topic.data = device['mqtt_topic']
 
     if request.method == 'POST' and form.validate():
         name = request.form['name']
         device_type = request.form['device_type']
         ip_address = request.form['ip_address']
+        mqtt_topic = request.form['mqtt_topic']
+        if (fctns.validateIP(ip_address)):
+            # create cursor
+            cur = mysql.connection.cursor()
 
-        # create cursor
-        cur = mysql.connection.cursor()
+            # execute
+            cur.execute("UPDATE devices SET name=%s, device_type=%s, ip_address=%s, mqtt_topic=%s WHERE id=%s", (name, device_type, ip_address, mqtt_topic, id))
 
-        # execute
-        cur.execute("UPDATE devices SET name=%s, device_type=%s, ip_address=%s WHERE id=%s", (name,device_type, ip_address, id))
+            # commit to DB
+            mysql.connection.commit()
 
-        # commit to DB
-        mysql.connection.commit()
+            # close connection
+            cur.close()
 
-        # close connection
-        cur.close()
-
-        flash('Device created', 'success')
+            flash('Device created', 'success')
+        else:
+            flash('Wrong IP Address!', 'danger')
         redirect(url_for('dashboard'))
 
     return render_template('add_device.html', form=form)
@@ -272,6 +280,21 @@ def delete_device(id):
     flash('Device deleted', 'success')
 
     return redirect(url_for('dashboard'))
+
+
+@app.route('/turnON')
+@is_logged_in
+def turnON():
+    mqt_funs.send('ON')
+    return redirect(url_for('configuration'))
+
+
+@app.route('/turnOFF')
+@is_logged_in
+def turnOFF():
+    mqt_funs.send('OFF')
+    return redirect(url_for('configuration'))
+
 
 
 if __name__ == '__main__':

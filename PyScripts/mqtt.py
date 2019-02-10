@@ -10,18 +10,18 @@ MQTT_MSG = "off"
 # Define on_publish event function
 def on_publish(client, userdata, mid):
     print("Message Published...")
+def send(msg):
+    # Initiate MQTT Client
+    mqttc = mqtt.Client()
 
-# Initiate MQTT Client
-mqttc = mqtt.Client()
+    # Register publish callback function
+    mqttc.on_publish = on_publish
 
-# Register publish callback function
-mqttc.on_publish = on_publish
+    # Connect with MQTT Broker
+    mqttc.connect(MQTT_HOST, MQTT_PORT, MQTT_KEEPALIVE_INTERVAL)
 
-# Connect with MQTT Broker
-mqttc.connect(MQTT_HOST, MQTT_PORT, MQTT_KEEPALIVE_INTERVAL)
+    # Publish message to MQTT Broker
+    mqttc.publish(MQTT_TOPIC, msg)
 
-# Publish message to MQTT Broker
-mqttc.publish(MQTT_TOPIC, MQTT_MSG)
-
-# Disconnect from MQTT_Broker
-mqttc.disconnect()
+    # Disconnect from MQTT_Broker
+    mqttc.disconnect()

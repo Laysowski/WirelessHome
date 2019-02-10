@@ -11,7 +11,10 @@
             {{ render_field(form.device_type, class_="form-control", id="editor") }}
         </div>
         <div class="form-group">
-            {{ render_field(form.ipaddress, class_="form-control", id="editor") }}
+            {{ render_field(form.ip_address, class_="form-control", id="editor") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mqtt_topic, class_="form-control", id="editor") }}
         </div>
         <p><input class="btn btn-primary" type="submit" value="Submit"></p>
     </form>

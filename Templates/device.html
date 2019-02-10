@@ -3,6 +3,7 @@
 {% block body %}
     <h1>{{device.name}}</h1>
     <small>This is {{device.name}} device with IP: {{device.ip_address}}</small>
+    <small>The MQTT topic of this device is: {{device.mqtt_topic}}</small>
     <hr>
     <div>
         {{device.create_date | safe}}
