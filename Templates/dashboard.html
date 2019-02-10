@@ -7,8 +7,9 @@
     <table class="table table-striped">
         <tr>
             <th>ID</th>
-            <th>Title</th>
-            <th>Author</th>
+            <th>Name</th>
+            <th>Device Type</th>
+            <th>IP Address</th>
             <th>Date</th>
             <th></th>
             <th></th>
@@ -16,8 +17,9 @@
         {% for device in devices %}
             <tr>
                 <td>{{device.id}}</td>
-                <td>{{device.title}}</td>
-                <td>{{device.author}}</td>
+                <td>{{device.name}}</td>
+                <td>{{device.device_type}}</td>
+                <td>{{device.ip_address}}</td>
                 <td>{{device.create_date}}</td>
                 <td><a href="edit_device/{{device.id}}}" class="btn btn-default pull-right">Edit</a> </td>
                 <td>

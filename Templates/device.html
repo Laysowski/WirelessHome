@@ -1,10 +1,10 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-    <h1>{{device.title}}</h1>
-    <small>Written by {{device.author}} on {{device.create_date}}</small>
+    <h1>{{device.name}}</h1>
+    <small>This is {{device.name}} device with IP: {{device.ip_address}}</small>
     <hr>
     <div>
-        {{device.body | safe}}
+        {{device.create_date | safe}}
     </div>
 {% endblock %}

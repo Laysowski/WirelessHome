@@ -174,8 +174,10 @@ def dashboard():
 
 # Device form class
 class DeviceForm(Form):
-    title = StringField('Title', [validators.Length(min=1, max=200)])
-    body = TextAreaField('Body', [validators.Length(min=30)])
+    name = StringField('Name', [validators.Length(min=1, max=200)])
+    device_type = StringField('Device type [relay/other]', [validators.Length(min=1, max=200)])
+    ip_address = StringField('IP Address', [validators.Length(min=1, max=200)])
+    # body = TextAreaField('Body', [validators.Length(min=30)])
 
 
 # Add Device
@@ -184,14 +186,15 @@ class DeviceForm(Form):
 def add_device():
     form = DeviceForm(request.form)
     if request.method == 'POST' and form.validate():
-        title = form.title.data
-        body = form.body.data
-        if (fctns.validateIP(title)):
+        name = form.name.data
+        device_type = form.device_type.data
+        ip_address = form.ip_address.data
+        if (fctns.validateIP(ip_address)):
             # create cursor
             cur = mysql.connection.cursor()
 
             # execute
-            cur.execute("INSERT INTO devices(title, body, author) VALUES(%s, %s, %s)", (title, body, session['username']))
+            cur.execute("INSERT INTO devices(name, device_type, ip_address) VALUES(%s, %s, %s)", (name, device_type, ip_address))
 
             # commit to DB
             mysql.connection.commit()
@@ -223,18 +226,20 @@ def edit_device(id):
     form = DeviceForm(request.form)
 
     # Populate device form fields
-    form.title.data = device['title']
-    form.body.data = device['body']
+    form.name.data = device['name']
+    form.device_type.data = device['device_type']
+    form.ip_address.data = device['ip_address']
 
     if request.method == 'POST' and form.validate():
-        title = request.form['title']
-        body = request.form['body']
+        name = request.form['name']
+        device_type = request.form['device_type']
+        ip_address = request.form['ip_address']
 
         # create cursor
         cur = mysql.connection.cursor()
 
         # execute
-        cur.execute("UPDATE devices SET title=%s, body=%s WHERE id=%s", (title, body, id))
+        cur.execute("UPDATE devices SET name=%s, device_type=%s, ip_address=%s WHERE id=%s", (name,device_type, ip_address, id))
 
         # commit to DB
         mysql.connection.commit()

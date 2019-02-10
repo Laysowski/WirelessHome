@@ -4,7 +4,8 @@ MQTT_HOST = '192.168.0.50'
 MQTT_PORT = 1883
 MQTT_KEEPALIVE_INTERVAL = 45
 MQTT_TOPIC = "esp/dev0"
-MQTT_MSG = "on"
+MQTT_MSG = "off"
+
 
 # Define on_publish event function
 def on_publish(client, userdata, mid):
